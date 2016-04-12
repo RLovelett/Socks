@@ -23,7 +23,7 @@ extension InternetAddress {
         switch self.address {
         case .Hostname(let hostname):
             //hostname must be converted to ip
-            addr.sin_addr = try InternetAddress.getAddressFromHostname(hostname)
+            addr.sin_addr = try InternetAddress.getAddressFromHostname(hostname: hostname)
         case .IPv4(let ipBytes4):
             //we got an IP, validate it
             let str = ipBytes4.toArray().periodSeparatedString()
@@ -36,7 +36,7 @@ extension InternetAddress {
         addr.sin_port = in_port_t(htons(in_port_t(self.port)))
         addr.sin_zero = (0, 0, 0, 0, 0, 0, 0, 0)
         
-        let res = sockaddr_cast(&addr).pointee
+        let res = sockaddr_cast(p: &addr).pointee
         return res
     }
     
@@ -54,7 +54,7 @@ extension InternetAddress {
             throw Error(.FailedToGetIPFromHostname("List is empty"))
         }
         
-        let addrStruct = sockadd_list_cast(hostInfo.h_addr_list)[0].pointee
+        let addrStruct = sockadd_list_cast(p: hostInfo.h_addr_list)[0].pointee
         return addrStruct
     }
 }
